@@ -1,11 +1,16 @@
 import React, { useContext } from 'react';
 import logo from '../../assets/images/login/login.svg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthProvider/AuthProvider';
-import { FaGoogle } from 'react-icons/fa';
+import SocialLogin from '../../Shared/SocialLogin/SocialLogin';
 
 const Login = () => {
-  const {loginUser, loginWithEmail} = useContext(AuthContext)
+  const {loginUser} = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
+
     const handleLogin = event =>{
         event.preventDefault();
         const form = event.target;
@@ -14,24 +19,37 @@ const Login = () => {
         loginUser(email, password)
         .then(result =>{
           const user = result.user;
-          console.log(user)
+
+          const currentUser = {
+            email: user.email
+          }
+          console.log(currentUser)
+         // get jwt token
+          fetch('https://genius-car-server-two-alpha.vercel.app/jwt', {
+            method: 'POST',
+            headers: {
+              'content-type':'application/json'
+            },
+            body: JSON.stringify(currentUser)
+          })
+          .then(res => res.json())
+          .then(data => {
+            console.log(data)
+            // local storage is not the best place to store jwt token(easy system)
+            localStorage.setItem('genius-token',data.token) 
+            navigate(from,{replace: true})
+          });
+
           form.reset();
+          
         })
         .catch(error =>{
           console.error(error)
-        })
+        });
+        
     };
 
-    const handleEmailLogin = ()=>{
-      loginWithEmail()
-      .then(result =>{
-        const user = result.user;
-        console.log(user)
-      })
-      .catch(error =>{
-        console.error(error)
-      })
-    }
+    
     return (
         <div className="hero w-full my-20">
   <div className="hero-content grid md:grid-cols-2 gap-20 flex-col lg:flex-row">
@@ -61,7 +79,7 @@ const Login = () => {
         </div>
       </form>
       <p className='text-center'>New to genius car? <Link to='/signup' className='text-red-600 font-bold'>Sign Up</Link></p>
-      <button onClick={handleEmailLogin} className="btn btn-outline btn-primary m-10"><span className='mr-4'>Continue with email</span> <FaGoogle></FaGoogle></button>
+      <SocialLogin></SocialLogin>
     </div>
   </div>
 </div>

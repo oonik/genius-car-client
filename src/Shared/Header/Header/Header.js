@@ -4,13 +4,26 @@ import logo from '../../../assets/logo.svg';
 import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 
 const Header = () => {
-  const {user} = useContext(AuthContext);
+  const {user, logOut} = useContext(AuthContext);
+
+  const handleLogout = ()=>{
+    logOut()
+    .then(()=>{
+
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+  }
     const menuItems =  <>
       <li className='font-semibold'><Link to='/'>Home</Link></li>
       {
         user?.email ?
         <>
          <li className='font-semibold'><Link to='/orders'>Orders</Link></li>
+         <li className='font-semibold'>
+            <button onClick={handleLogout} className=' btn-ghost'>Sign Out</button>
+         </li>
         </>
         :
         <li className='font-semibold'><Link to='/login'>Login</Link></li>
@@ -28,7 +41,7 @@ const Header = () => {
       </ul>
     </div>
     <Link to='/' className="btn btn-ghost normal-case text-xl">
-        <img className='h-20 w-20' src={logo} alt="" />
+        <img className='h-30 w-20' src={logo} alt="" />
     </Link>
   </div>
   <div className="navbar-center hidden lg:flex">

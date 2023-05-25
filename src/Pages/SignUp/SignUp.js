@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import signup from '../../assets/images/login/login.svg';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthProvider/AuthProvider';
+import { setAuthToken } from '../../Api/auth';
 
 
 const SignUp = () => {
@@ -16,6 +17,7 @@ const SignUp = () => {
     .then(result =>{
       const user = result.user;
       console.log(user)
+      setAuthToken(user);
       form.reset();
     })
     .catch(error =>{
@@ -47,7 +49,7 @@ const SignUp = () => {
           <label className="label">
             <span className="label-text">Password</span>
           </label>
-          <input type="text" name='password' placeholder="password" className="input input-bordered" required/>
+          <input type="password" name='password' placeholder="password" className="input input-bordered" required/>
         </div>
         <div className="form-control mt-6">
             <input className="btn btn-primary" type="submit" value="Sign Up" />
